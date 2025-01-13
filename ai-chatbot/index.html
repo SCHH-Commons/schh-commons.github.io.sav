@@ -28,7 +28,7 @@
     .drawer-toggle { fill: white; scale: 80%; }
     .response { margin-right: auto; position: relative; }
     sl-copy-button { position: absolute; right: -22px; bottom: -4px; margin-left: 0.25rem; padding: 0; background-color: inherit; }
-    sl-drawer::part(base) { height: calc(100% - 98px); background-color: }
+    sl-drawer::part(base) { height: calc(100% - 98px); }
     .drawer-content p { font-size: 1.1em; line-height: 1.5; }
     @media (min-width: 600px) { /* desktop, laptops, wider devices */
       .chat-area { padding: 1em; } 
@@ -75,8 +75,8 @@
     const inIframe = window.location !== window.parent.location // flag indicating if the page is in an iframe
     const isMobile = ('ontouchstart' in document.documentElement && /mobi/i.test(navigator.userAgent) )
 
-    // const apiEndpoint = ''
-    const apiEndpoint = 'https://ai-chatbot-fkiv.onrender.com'
+    const serviceDomain = 'https://ai-chatbot-fkiv.onrender.com' // the domain hosting the chatbot service
+    const apiEndpoint = location.origin === 'https://ai-chatbot-fkiv.onrender.com' || location.hostname === 'localhost' ? '' : serviceDomain
 
     const chatEl = document.querySelector('.chat-area')
     const drawerEl = document.querySelector('.drawer')
@@ -102,8 +102,8 @@
 
     const getDrawerContent = (path) => {
       if (!path.endsWith('.md')) path += '.md'
-      fetch(path).then(response => response.text()).then(text => {
-        drawerContentEl.innerHTML = `<a href="README" style="color: #791917; visibility:${path === 'README.md' ? 'hidden' : 'visible'};">Back</a> ` + marked.parse(text) 
+      fetch(`static/${path}`).then(response => response.text()).then(text => {
+        drawerContentEl.innerHTML = `<a href="about" style="color: #791917; visibility:${path === 'about.md' ? 'hidden' : 'visible'};">Back</a> ` + marked.parse(text) 
         drawerContentEl.querySelectorAll('a').forEach(a => {
           if (new URL(a.href).origin === window.location.origin) {
             a.addEventListener('click', (e) => {
@@ -115,7 +115,7 @@
       })
     }
 
-    drawerEl.addEventListener('sl-show', () => getDrawerContent('README'))
+    drawerEl.addEventListener('sl-show', () => getDrawerContent('about'))
 
     const md2Html = (md) => marked.parse(md).replace(/^\s*<p>/, '').replace(/<\/p>\s*$/, '') // convert markdown to HTML
     const docReady = (fn) => { if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(fn, 1); else document.addEventListener('DOMContentLoaded', fn) }

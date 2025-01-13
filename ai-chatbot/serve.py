@@ -134,8 +134,6 @@ async def generate_chat_events(message, session_id):
   
   try:
     async for event in conversational_rag_chain.astream_events(message, version='v1', config={'configurable': {'session_id': session_id}} ):
-      print(event)
-      # print(event['tags'], event['event'], event.get('data',{}).get('chunk'))
       # Only get the answer
       sources_tags = ['seq:step:3', 'main_chain']
       if all(value in event['tags'] for value in sources_tags) and event['event'] == 'on_chat_model_stream':

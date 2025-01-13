@@ -175,7 +175,7 @@ async def root():
 
 @app.get('/manifest.json') # For PWA
 async def pwa_manifest():
-  return FileResponse('manifest.json')
+  return FileResponse('static/manifest.json')
 
 @app.post('/chat')
 async def chat(request: Request):

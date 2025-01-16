@@ -17,7 +17,6 @@ llm = ChatOpenAI(model=llm_model)
 #### Construct retriever and get vector store ####
 
 import os
-from langchain_openai import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone
 
@@ -26,7 +25,14 @@ text_field = 'text'
 
 pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
 index = pc.Index(index_name)
+
+from langchain_openai import OpenAIEmbeddings
 embeddings = OpenAIEmbeddings( model=embeddings_model, openai_api_key=os.getenv('OPENAPI_API_KEY') )
+
+# from langchain_huggingface import HuggingFaceEmbeddings
+# embeddings = HuggingFaceEmbeddings(model_name='intfloat/e5-large-v2')
+# embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-mpnet-base-v2')
+
 vectorstore = PineconeVectorStore( index, embeddings, text_field )  
 retriever = vectorstore.as_retriever(search_kwargs={'k': 5})
 
@@ -65,7 +71,7 @@ use your general knowledge cautiously. Avoid making up information or guessing. 
 Guidelines: \
 1. Use the context as the primary source for your answers. \
 2. If additional information is needed and not provided in the context, rely on your general knowledge when you have confidence that it is accurate and relevant. \
-3. All references to Sun City refer to Sun City Hilton Head, unless otherwise specified. \
+3. All references to Sun City refer to Sun City Hilton Head, unless otherwise specified.  Sun City West is a section in Sun City Hilton Head. \
 4. Refer to the context as the "SCHH Knowledge Base" when used in a responses.  Only mention the knowledge base when it does not provide the needed information. \
 5. All output is returned as Markdown formatted text. \
 6. If you cannot answer the question accurately, state that the information is unavailable or that the context does not provide enough detail. \
@@ -168,9 +174,6 @@ app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, 
 
 @app.get('/')
 async def root():
-  html = open('index.html', 'r').read()
-
-  html = html.replace('MODEL_NAME', llm_model)
   return FileResponse('index.html')
 
 @app.get('/manifest.json') # For PWA
@@ -191,6 +194,7 @@ async def chat(request: Request):
     return StreamingResponse(generate_chat_events({'input': prompt, 'chat_history': []}, sessionid), media_type='text/event-stream')
   else:
     resp = conversational_rag_chain.invoke({'input': prompt}, config={'configurable': {'session_id': sessionid}}, )
+    # print_response(resp)
     return Response(status_code=200, content=resp['answer'], media_type='text/plain')
 
 if __name__ == '__main__':

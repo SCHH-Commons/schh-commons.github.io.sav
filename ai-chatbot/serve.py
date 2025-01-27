@@ -78,7 +78,9 @@ def create_agent(model, knowledge_base):
   @tool(response_format="content_and_artifact")
   def retrieve(query: str):
       """Retrieve information related to a query."""
-      retrieved_docs = vector_store.similarity_search(query, k=2)
+      retrieved_docs = vector_store.similarity_search(query, k=5)
+      for doc in retrieved_docs:
+        print(doc.metadata)
       serialized = "\n\n".join(
           (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
           for doc in retrieved_docs

@@ -1,0 +1,7 @@
+- label: upcoming events
+  icon: calendar
+  prompt: list upcoming events
+
+- labe: weather
+  icon: sun
+  prompt: get the weather forecast

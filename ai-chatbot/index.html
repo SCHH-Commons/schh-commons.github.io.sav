@@ -100,7 +100,7 @@
   
   </div>
 
-
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
   <script type="module">
 
     import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
@@ -198,7 +198,13 @@
     } 
     drawerEl.addEventListener('sl-hide', () => updateSettings())
     
+    const icons = jsyaml.load(await fetch('static/icons.yaml').then(response => response.text()))
+    const prompts = jsyaml.load(await fetch('static/prompts.yaml').then(response => response.text()))
+
+    // Initialize the chatbot
     getSettings()
+    console.log(icons)
+    console.log(prompts)
 
     const md2Html = (md) => marked.parse(md).replace(/^\s*<p>/, '').replace(/<\/p>\s*$/, '') // convert markdown to HTML
     const docReady = (fn) => { if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(fn, 1); else document.addEventListener('DOMContentLoaded', fn) }

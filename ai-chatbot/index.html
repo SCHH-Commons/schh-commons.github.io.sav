@@ -51,6 +51,7 @@
     sl-button::part(base) { background-color: #791917; border-color: #791917; }
     #settings { display: flex; flex-direction: column; gap: 0.5em; height: 100%;}
     .selector { display: flex; gap: 1em; align-items: center; }
+    svg.refresh { fill: white; width: 24px; height: 24px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -58,7 +59,10 @@
   <div class="chat-container">
     <div class="chat-area" id="chat-area"></div>
     <div class="input-container">
+      <!-- menu icon -->
       <svg class="drawer-toggle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 96C0 78.3 14.3 64 32 64l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 128C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 288c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32L32 448c-17.7 0-32-14.3-32-32s14.3-32 32-32l384 0c17.7 0 32 14.3 32 32z"/></svg>
+      <!-- refresh icon -->
+      <svg class="refresh" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#FFF"><path d="M142.9 142.9c-17.5 17.5-30.1 38-37.8 59.8c-5.9 16.7-24.2 25.4-40.8 19.5s-25.4-24.2-19.5-40.8C55.6 150.7 73.2 122 97.6 97.6c87.2-87.2 228.3-87.5 315.8-1L455 55c6.9-6.9 17.2-8.9 26.2-5.2s14.8 12.5 14.8 22.2l0 128c0 13.3-10.7 24-24 24l-8.4 0c0 0 0 0 0 0L344 224c-9.7 0-18.5-5.8-22.2-14.8s-1.7-19.3 5.2-26.2l41.1-41.1c-62.6-61.5-163.1-61.2-225.3 1zM16 312c0-13.3 10.7-24 24-24l7.6 0 .7 0L168 288c9.7 0 18.5 5.8 22.2 14.8s1.7 19.3-5.2 26.2l-41.1 41.1c62.6 61.5 163.1 61.2 225.3-1c17.5-17.5 30.1-38 37.8-59.8c5.9-16.7 24.2-25.4 40.8-19.5s25.4 24.2 19.5 40.8c-10.8 30.6-28.4 59.3-52.9 83.8c-87.2 87.2-228.3 87.5-315.8 1L57 457c-6.9 6.9-17.2 8.9-26.2 5.2S16 449.7 16 440l0-119.6 0-.7 0-7.6z"/></svg>
       <sl-textarea
         class="chat-textarea"
         placeholder="Type your message..."
@@ -125,6 +129,7 @@
     const inputEl = document.querySelector('.chat-textarea')
     const submitEl = document.querySelector('.submit')
     const drawerToggleEl = document.querySelector('.drawer-toggle')
+    const refreshButton = document.querySelector('.refresh')
     submitEl.addEventListener('click', (e) => { 
       let message = inputEl.value.trim()
       inputEl.value = ''
@@ -140,6 +145,7 @@
     })
     drawerEl.querySelector('sl-button')?.addEventListener('click', () => drawerEl.open = false)
     drawerToggleEl.addEventListener('click', () => drawerEl.open = !drawerEl.open)
+    refreshButton.addEventListener('click', () => location.reload())
 
     const getDrawerContent = (path) => {
       if (!path.endsWith('.md')) path += '.md'

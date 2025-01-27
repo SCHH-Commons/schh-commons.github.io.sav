@@ -125,7 +125,7 @@ app.mount("/static", CacheControlStaticFiles(directory="static"), name="static")
 
 @app.get('/')
 async def root():
-  return FileResponse('../../index.html')
+  return FileResponse('index.html')
 
 @app.get('/chat/{prompt}')
 @app.post('/chat')

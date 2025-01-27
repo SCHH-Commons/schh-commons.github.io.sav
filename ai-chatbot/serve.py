@@ -1,165 +1,119 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#### Define options ####
+'''
+Example Agentic Chat Server using SCHH content and tools
+'''
 
-llm_model = 'gpt-4o'
-embeddings_model = 'text-embedding-ada-002'
+import json, os, secrets
+from typing import Optional
 
-
-#### Define LLM ####
+### Define LLM ###
 
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 
-llm = ChatOpenAI(model=llm_model)
-
-
-#### Construct retriever and get vector store ####
-
-import os
 from langchain_pinecone import PineconeVectorStore
+from langchain_openai import OpenAIEmbeddings
+from langgraph.prebuilt import create_react_agent
+
 from pinecone import Pinecone
 
-index_name = 'schh'
-text_field = 'text'
+embeddings = OpenAIEmbeddings()
+pc = Pinecone()
 
-pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-index = pc.Index(index_name)
-
-from langchain_openai import OpenAIEmbeddings
-embeddings = OpenAIEmbeddings( model=embeddings_model, openai_api_key=os.getenv('OPENAPI_API_KEY') )
-
-# from langchain_huggingface import HuggingFaceEmbeddings
-# embeddings = HuggingFaceEmbeddings(model_name='intfloat/e5-large-v2')
-# embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-mpnet-base-v2')
-
-vectorstore = PineconeVectorStore( index, embeddings, text_field )  
-retriever = vectorstore.as_retriever(search_kwargs={'k': 5})
+from langgraph.checkpoint.memory import MemorySaver
+memory = MemorySaver()
 
 
-#### Contextualize question ####
- 
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain.chains import create_history_aware_retriever
+### Define tools ###
 
-contextualize_q_system_prompt = '''Given a chat history and the latest user question \
-which might reference context in the chat history, formulate a standalone question \
-which can be understood without the chat history. Do NOT answer the question, \
-just reformulate it if needed and otherwise return it as is.'''
+from langchain_core.tools import tool
+from typing import Literal
+from datetime import datetime
 
-contextualize_q_prompt = ChatPromptTemplate.from_messages(
-  [
-    ('system', contextualize_q_system_prompt),
-    MessagesPlaceholder('chat_history'),
-    ('human', '{input}'),
-  ]
-)
-history_aware_retriever = create_history_aware_retriever(
-  llm, retriever, contextualize_q_prompt
-)
-
-
-#### Answer question ####
-
-from langchain.chains.combine_documents import create_stuff_documents_chain
-from langchain.chains import create_retrieval_chain
-
-system_prompt = '''You are an expert assistant tasked with answering questions using the provided context. \
-Prioritize the context to generate your response. If the context is insufficient to fully address the question, \
-use your general knowledge cautiously. Avoid making up information or guessing. \
-\
-Guidelines: \
-1. Use the context as the primary source for your answers. \
-2. If additional information is needed and not provided in the context, rely on your general knowledge when you have confidence that it is accurate and relevant. \
-3. All references to Sun City refer to Sun City Hilton Head, unless otherwise specified.  Sun City West is a section in Sun City Hilton Head. \
-4. Refer to the context as the "SCHH Knowledge Base" when used in a responses.  Only mention the knowledge base when it does not provide the needed information. \
-5. All output is returned as Markdown formatted text. \
-6. If you cannot answer the question accurately, state that the information is unavailable or that the context does not provide enough detail. \
-
-{context}'''
-
-qa_prompt = ChatPromptTemplate.from_messages(
-  [
-    ('system', system_prompt),
-    MessagesPlaceholder(variable_name='chat_history'),
-    ('human', '{input}'),
-  ]
-)
-
-question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
-
-rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-
-
-#### Statefully manage chat history ####
-
-import json
-from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_community.chat_message_histories import ChatMessageHistory
-
-store = {}
-
-def get_session_history(session_id: str) -> BaseChatMessageHistory:
-  if session_id not in store:
-    store[session_id] = ChatMessageHistory()
-  return store[session_id]
-
-conversational_rag_chain = RunnableWithMessageHistory(
-  rag_chain,
-  get_session_history,
-  input_messages_key='input',
-  history_messages_key='chat_history',
-  output_messages_key='answer',
-).with_config(tags=['main_chain'])
-
-def print_response(resp):
-  as_dict = {
-    'input': resp['input'],
-    'chat_history': [doc.model_dump() for doc in resp['chat_history']],
-    'context': [doc.model_dump() for doc in resp['context']],
-    'answer': resp['answer']
-  }
-  print(json.dumps(as_dict, indent=2) + '\n')
-
-def print_session_data(sessionid):
-  print(json.dumps(store[sessionid].model_dump(), indent=2))
-
-
-#### Output streamer ####
-
-from langchain_core.messages import AIMessageChunk
-
-async def generate_chat_events(message, session_id):
-  
-  def serialize_aimessagechunk(chunk):
-    if isinstance(chunk, AIMessageChunk):
-      return chunk.content
+@tool
+def get_weather(city: Literal["nyc", "sf"]):
+    """Use this to get weather information."""
+    if city == "nyc":
+        return "It might be cloudy in nyc"
+    elif city == "sf":
+        return "It's always sunny in sf"
     else:
-      raise TypeError(f'Object of type {type(chunk).__name__} is not correctly formatted for serialization')
-  
-  try:
-    async for event in conversational_rag_chain.astream_events(message, version='v1', config={'configurable': {'session_id': session_id}} ):
-      # Only get the answer
-      sources_tags = ['seq:step:3', 'main_chain']
-      if all(value in event['tags'] for value in sources_tags) and event['event'] == 'on_chat_model_stream':
-        chunk_content = serialize_aimessagechunk(event['data']['chunk'])
-        if len(chunk_content) != 0:
-          yield chunk_content
-          
-  except Exception as e:
-    print('error'+ str(e))
-    
-#### FastAPI server ####
+        raise AssertionError("Unknown city")
 
+@tool
+def current_date():
+    """Use this to get the current date."""
+    return datetime.today().strftime('%Y-%m-%d')
+  
+@tool
+def current_location():
+    """Use this to get the current location."""
+    return 'Unless otherwise stated, assume the uses is located in the Sun City Hilton Head area'
+
+tools = [get_weather, current_date, current_location]
+
+
+### Define Agent ###
+
+_model_name = None
+_knowledge_base = None
+agent_executor = None
+def create_agent(model, knowledge_base):
+  global agent_executor, _model_name, _knowledge_base
+  if model == _model_name and knowledge_base == _knowledge_base:
+    return
+  _model_name = model
+  _knowledge_base = knowledge_base
+  print(f'Creating agent with model={model} knowledge_base={knowledge_base}')
+  if 'gpt-4o' in model:
+    llm = ChatOpenAI(model=model)
+  else:
+    print(f'Using Anthropic model: {model} api_key={os.environ.get("ANTHROPIC_API_KEY")}')
+    llm = ChatAnthropic(model_name=model)
+  pinecone_index = pc.Index(knowledge_base)
+  vector_store = PineconeVectorStore( pinecone_index, embeddings, 'text' )  
+
+  @tool(response_format="content_and_artifact")
+  def retrieve(query: str):
+      """Retrieve information related to a query."""
+      retrieved_docs = vector_store.similarity_search(query, k=2)
+      serialized = "\n\n".join(
+          (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
+          for doc in retrieved_docs
+      )
+      return serialized, retrieved_docs
+
+  agent_executor = create_react_agent(llm, tools + [retrieve], checkpointer=memory)
+
+ 
+ ### Helpers ###
+
+from langchain_core.messages import HumanMessage
+
+def get_response(messages, config):
+  return agent_executor.invoke({'messages': messages}, config)['messages'][-1].content
+
+## Response generator for streaming
+async def stream_response(messages, config):
+  async for msg, metadata in agent_executor.astream({'messages': messages}, config, stream_mode='messages'):
+    if (
+        msg.content
+        and not isinstance(msg, HumanMessage)
+        and metadata['langgraph_node'] == 'agent' 
+    ):
+        yield msg.content
+ 
+ 
+ ### Setup FastAPI server and define endpoints ###
+ 
 from fastapi import FastAPI, Request
+from fastapi.responses import Response, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import StreamingResponse, Response, FileResponse
-from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional
-import secrets
 
 app = FastAPI()
+
 class CacheControlStaticFiles(StaticFiles):
   def file_response(self, *args, **kwargs) -> Response:
     response = super().file_response(*args, **kwargs)
@@ -167,35 +121,31 @@ class CacheControlStaticFiles(StaticFiles):
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
-
 app.mount("/static", CacheControlStaticFiles(directory="static"), name="static")
-app.mount('/static', StaticFiles(directory='static'), name='static')
-app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
 
 @app.get('/')
 async def root():
-  return FileResponse('index.html')
+  return FileResponse('../../index.html')
 
-@app.get('/manifest.json') # For PWA
-async def pwa_manifest():
-  return FileResponse('static/manifest.json')
-
+@app.get('/chat/{prompt}')
 @app.post('/chat')
-async def chat(request: Request):
+async def chat(request: Request, prompt: Optional[str] = None, sessionid: Optional[str] = None, stream: Optional[bool] = False): 
+  body = await request.body()
+  payload = json.loads(body)
+  print(json.dumps(payload, indent=2))
+  prompt = payload.get('prompt', '')
+  stream = payload.get('stream', False)
+  sessionid = payload.get('sessionid', secrets.token_hex(4))
   
-  payload = await request.body()
-  message = json.loads(payload)
+  create_agent(payload.get('model', 'gpt-4o-mini'), payload.get('knowledge_base', 'schh'))
 
-  sessionid = message.get('sessionid', secrets.token_hex(4))
-  prompt = message.get('prompt', '')
-  stream = message.get('stream', False)
-
+  config = {'configurable': {'thread_id': sessionid}}
+  messages = [{'role': 'user', 'content': prompt}]
+  
   if stream:
-    return StreamingResponse(generate_chat_events({'input': prompt, 'chat_history': []}, sessionid), media_type='text/event-stream')
+    return StreamingResponse(stream_response(messages, config), media_type='text/event-stream')
   else:
-    resp = conversational_rag_chain.invoke({'input': prompt}, config={'configurable': {'session_id': sessionid}}, )
-    # print_response(resp)
-    return Response(status_code=200, content=resp['answer'], media_type='text/plain')
+    return Response(content=get_response(messages, config), media_type='text/plain')  
 
 if __name__ == '__main__':
   import uvicorn

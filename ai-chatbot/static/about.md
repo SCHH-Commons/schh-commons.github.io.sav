@@ -1,4 +1,4 @@
-# SCHH AI Chatbot
+# About the SCHH AI Chatbot
 
 Welcome to your personalized Sun City Hilton Head (SCHH) information assistant! Whether you’re a current resident or considering making this vibrant community your new home, this app is here to make finding the information you need simple and engaging. Just type a question in the input box to get tailored answers about life in SCHH, from events and amenities to local resources and activities. No more scavenger hunts on websites, endless emails, or asking around—this app is your one-stop destination for all things Sun City Hilton Head.
 

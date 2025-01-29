@@ -2,6 +2,10 @@
   icon: calendar
   prompt: list upcoming events
 
-- labe: weather
+- label: weather forecast
   icon: sun
-  prompt: get the weather forecast
+  prompt: get the weather forecast for Sun City
+
+- label: today is
+  icon: sun
+  prompt: what is today's date

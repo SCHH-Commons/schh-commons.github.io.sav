@@ -1,11 +1,11 @@
 - label: upcoming events
   icon: calendar
-  prompt: list upcoming events
+  prompt: List upcoming events in Sun City Hilton Head
 
 - label: weather forecast
   icon: sun
-  prompt: get the weather forecast for Sun City
+  prompt: Get the weather forecast for the Sun City Hilton Head area
 
 - label: today is
   icon: sun
-  prompt: what is today's date
+  prompt: What is today's date?

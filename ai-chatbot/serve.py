@@ -52,7 +52,10 @@ def current_location():
     """Use this to get the current location."""
     return 'Unless otherwise stated, assume the uses is located in the Sun City Hilton Head area'
 
-tools = [get_weather, current_date, current_location]
+from langchain_community.tools.tavily_search import TavilySearchResults
+search = TavilySearchResults(max_results=2)
+
+tools = [current_date, current_location]
 
 
 ### Define Agent ###
@@ -87,7 +90,7 @@ def create_agent(model, knowledge_base):
       )
       return serialized, retrieved_docs
 
-  agent_executor = create_react_agent(llm, tools + [retrieve], checkpointer=memory)
+  agent_executor = create_react_agent(llm, [retrieve] + tools, checkpointer=memory)
 
  
  ### Helpers ###

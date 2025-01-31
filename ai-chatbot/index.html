@@ -144,7 +144,8 @@
     const isMobile = ('ontouchstart' in document.documentElement && /mobi/i.test(navigator.userAgent) )
 
     const serviceDomain = 'https://ai-chatbot-fkiv.onrender.com' // the domain hosting the chatbot service
-    const apiEndpoint = location.origin === 'https://ai-chatbot-fkiv.onrender.com' || location.hostname === 'localhost' ? '' : serviceDomain
+    // const apiEndpoint = location.origin === 'https://ai-chatbot-fkiv.onrender.com' || location.hostname === 'localhost' ? '' : serviceDomain
+    const apiEndpoint = ''
         
     let sessionid = Math.random().toString(36).substring(7)
     let msgCtr = 0

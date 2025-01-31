@@ -144,8 +144,7 @@
     const isMobile = ('ontouchstart' in document.documentElement && /mobi/i.test(navigator.userAgent) )
 
     const serviceDomain = 'https://ai-chatbot-fkiv.onrender.com' // the domain hosting the chatbot service
-    // const apiEndpoint = location.origin === 'https://ai-chatbot-fkiv.onrender.com' || location.hostname === 'localhost' ? '' : serviceDomain
-    const apiEndpoint = ''
+    const apiEndpoint = location.origin === 'https://schh-commons.org' || location.hostname === 'localhost' ? '' : serviceDomain
         
     let sessionid = Math.random().toString(36).substring(7)
     let msgCtr = 0
@@ -204,16 +203,16 @@
         ['gpt-4o', 'GPT 4o'],
         ['claude-3-sonnet-20240229', 'Claude 3.5 Sonnet']
       ],
-      knowledgeBases:[
+      indexes:[
         ['schh', 'schh']
       ] 
     }
-    const defaultSettings = { stream: true, model: 'gpt-4o-mini', knowledgeBase: 'schh' }
+    const defaultSettings = { stream: true, model: 'gpt-4o-mini', index: 'schh' }
     let settings = { ...defaultSettings }
     const updateSettings = () => {
       settings.stream = drawerEl.querySelector('#stream').checked
       settings.model = drawerEl.querySelector('#model').value
-      settings.knowledgeBase = drawerEl.querySelector('#knowledgeBase').value
+      settings.index = drawerEl.querySelector('#knowledgeBase').value
       localStorage.setItem('settings', JSON.stringify(settings))
     }
     const getSettings = () => {
@@ -225,7 +224,7 @@
       settingsValues.models.forEach(([value, label]) => settingsHtml += `<sl-option value="${value}">${label}</sl-option>`)
       settingsHtml += `</sl-select></div>`
       settingsHtml += `<div class="selector"><span>Knowledge base: </span><sl-select id="knowledgeBase" value="${settings.knowledgeBase}" hoist placement="bottom">`
-      settingsValues.knowledgeBases.forEach(([value, label]) => settingsHtml += `<sl-option value="${value}">${label}</sl-option>`)
+      settingsValues.indexes.forEach(([value, label]) => settingsHtml += `<sl-option value="${value}">${label}</sl-option>`)
       settingsHtml += `</sl-select></div>`
       settingsEl.innerHTML = settingsHtml
     } 

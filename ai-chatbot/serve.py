@@ -155,15 +155,24 @@ async def root():
 @app.get('/chat/{prompt}')
 @app.post('/chat/')
 @app.post('/chat')
-async def chat(request: Request, prompt: Optional[str] = None, sessionid: Optional[str] = None, stream: Optional[bool] = False): 
-  body = await request.body()
-  payload = json.loads(body)
-  print(json.dumps(payload, indent=2))
-  prompt = payload.get('prompt', '')
-  stream = payload.get('stream', False)
-  sessionid = payload.get('sessionid', secrets.token_hex(4))
+async def chat(
+  request: Request, 
+  prompt: Optional[str] = None, 
+  sessionid: Optional[str] = secrets.token_hex(4),
+  model: Optional[str] = 'gpt-4o-mini',
+  index: Optional[str] = 'schh',
+  stream: Optional[bool] = False): 
+  if request.method == 'POST':
+    body = await request.body()
+    payload = json.loads(body)
+    print(json.dumps(payload, indent=2))
+    prompt = payload.get('prompt', '')
+    stream = payload.get('stream', False)
+    sessionid = payload.get('sessionid', secrets.token_hex(4))
   
-  create_agent(payload.get('model', 'gpt-4o-mini'), payload.get('knowledge_base', 'schh'))
+  print(f'chat prompt={prompt} sessionid={sessionid} model={model} index={index} stream={stream}')
+  
+  create_agent(model, index)
 
   config = {'configurable': {'thread_id': sessionid}}
   messages = [{'role': 'user', 'content': prompt}]

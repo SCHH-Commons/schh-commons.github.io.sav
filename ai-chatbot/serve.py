@@ -134,6 +134,7 @@ async def stream_response(messages, config):
 from fastapi import FastAPI, Request
 from fastapi.responses import Response, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -145,12 +146,14 @@ class CacheControlStaticFiles(StaticFiles):
     response.headers['Expires'] = '0'
     return response
 app.mount("/static", CacheControlStaticFiles(directory="static"), name="static")
+app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_credentials=True, allow_methods=['*'], allow_headers=['*'])
 
 @app.get('/')
 async def root():
   return FileResponse('index.html')
 
 @app.get('/chat/{prompt}')
+@app.post('/chat/')
 @app.post('/chat')
 async def chat(request: Request, prompt: Optional[str] = None, sessionid: Optional[str] = None, stream: Optional[bool] = False): 
   body = await request.body()

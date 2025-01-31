@@ -133,6 +133,7 @@
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/drawer/drawer.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/option/option.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/select/select.js';
+    import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/spinner/spinner.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/switch/switch.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/tab/tab.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/tab-group/tab-group.js';
@@ -238,6 +239,7 @@
     .then((responses => responses.map(r => jsyaml.load(r))))
 
     const addPrebuiltPrompts = () => {
+      let today = new Date().toISOString().slice(0, 10)
       prompts.forEach(p => {
         let promptButton = document.createElement('sl-button')
         promptButton.textContent = p.label
@@ -250,7 +252,7 @@
         promptButton.appendChild(svg);
 
         promptsEl.appendChild(promptButton)
-        promptButton.addEventListener('click', () => sendMessage(p.prompt))
+        promptButton.addEventListener('click', () => sendMessage(p.prompt.replace('{{today}}', today)))
       })
     }
 
@@ -278,11 +280,6 @@
 
       let initial = msgCtr === 0
       let msgId = `msg-${++msgCtr}`
-
-      const readyForInput = () => {
-        if (!isMobile) setTimeout(() => inputEl.focus(), 1000)
-        initial = false
-      }
 
       prompt = prompt.trim()
       if (prompt === '') return
@@ -322,9 +319,10 @@
       responseWrapperEl.appendChild(responseMarkdownEl)
 
       let responseEl = document.createElement('div')
+      responseEl.innerHTML = '<sl-spinner></sl-spinner>'
       responseEl.setAttribute('class', 'response')
       responseEl.id = msgId
-      responseEl.style.display = 'none'
+      // responseEl.style.display = 'none'
       responseWrapperEl.appendChild(responseEl)
       
       copyButton = document.createElement('sl-copy-button')
@@ -339,10 +337,8 @@
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        if (msgCtr === 1) readyForInput()
 
         response.push(decoder.decode(value))
-        responseEl.style.display = 'block'
         responseEl.innerHTML = md2Html(response.join(''))
         responseEl.appendChild(copyButton)
         scrollToBottom()

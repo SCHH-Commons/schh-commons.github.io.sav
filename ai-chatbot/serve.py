@@ -29,33 +29,28 @@ memory = MemorySaver()
 ### Define tools ###
 
 from langchain_core.tools import tool
-from typing import Literal
 from datetime import datetime
-
-@tool
-def get_weather(city: Literal["nyc", "sf"]):
-    """Use this to get weather information."""
-    if city == "nyc":
-        return "It might be cloudy in nyc"
-    elif city == "sf":
-        return "It's always sunny in sf"
-    else:
-        raise AssertionError("Unknown city")
+from langchain_community.tools import TavilySearchResults
 
 @tool
 def current_date():
-    """Use this to get the current date."""
-    return datetime.today().strftime('%Y-%m-%d')
+  """Use this to get the current date."""
+  return datetime.today().strftime('%Y-%m-%d')
   
 @tool
-def current_location():
-    """Use this to get the current location."""
-    return 'Unless otherwise stated, assume the uses is located in the Sun City Hilton Head area'
+def schh_weather() -> str:
+  """Get the weather forecast for the Sun City Hilton Head region."""
+  return TavilySearchResults(
+    max_results=3,
+    search_depth="advanced",
+    include_answer=True,
+    include_raw_content=True,
+    include_images=True).invoke({"query": "What is the weather forecast for the Sun City Hilton Head region?"})
 
 from langchain_community.tools.tavily_search import TavilySearchResults
 search = TavilySearchResults(max_results=2)
 
-tools = [current_date, current_location]
+tools = [current_date, schh_weather]
 
 
 ### Define Agent ###
@@ -79,18 +74,41 @@ def create_agent(model, knowledge_base):
   vector_store = PineconeVectorStore( pinecone_index, embeddings, 'text' )  
 
   @tool(response_format="content_and_artifact")
+  def upcoming_events():
+    """Use this to get event information."""
+    print('Tool: upcoming_events')
+    query = f'get events'
+    retrieved_docs = vector_store.similarity_search(query, k=5)
+    
+    print(f'\n{query} retrieved={len(retrieved_docs)}\n')
+    for doc in retrieved_docs:
+      print(json.dumps(doc.metadata))
+      # print(doc.page_content + '\n)
+  
+    serialized = "\n\n".join(
+        (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
+        for doc in retrieved_docs
+    )
+    return serialized, retrieved_docs
+  
+  @tool(response_format="content_and_artifact")
   def retrieve(query: str):
-      """Retrieve information related to a query."""
-      retrieved_docs = vector_store.similarity_search(query, k=5)
-      for doc in retrieved_docs:
-        print(doc.metadata)
-      serialized = "\n\n".join(
-          (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
-          for doc in retrieved_docs
-      )
-      return serialized, retrieved_docs
+    """Retrieve information related to a query."""
+    print('Tool: retrieve')
+    retrieved_docs = vector_store.similarity_search(query, k=5)
 
-  agent_executor = create_react_agent(llm, [retrieve] + tools, checkpointer=memory)
+    print(f'\n{query} retrieved={len(retrieved_docs)}\n')
+    for doc in retrieved_docs:
+      print(json.dumps(doc.metadata))
+      # print(doc.page_content + '\n)
+  
+    serialized = "\n\n".join(
+        (f"Source: {doc.metadata}\n" f"Content: {doc.page_content}")
+        for doc in retrieved_docs
+    )
+    return serialized, retrieved_docs
+
+  agent_executor = create_react_agent(llm, tools + [retrieve], checkpointer=memory)
 
  
  ### Helpers ###

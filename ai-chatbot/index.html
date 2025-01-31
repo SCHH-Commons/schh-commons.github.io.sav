@@ -143,9 +143,8 @@
     const inIframe = window.location !== window.parent.location // flag indicating if the page is in an iframe
     const isMobile = ('ontouchstart' in document.documentElement && /mobi/i.test(navigator.userAgent) )
 
-    const serviceDomain = 'https://ai-chatbot-fkiv.onrender.com' // the domain hosting the chatbot service
-    const apiEndpoint = location.origin === 'https://schh-commons.org' || location.hostname === 'localhost' ? '' : serviceDomain
-        
+    const apiEndpoint = location.hostname === 'localhost' ? '' : 'https://ai-chatbot-fkiv.onrender.com'
+
     let sessionid = Math.random().toString(36).substring(7)
     let msgCtr = 0
 

@@ -163,12 +163,12 @@
     const submitEl = document.querySelector('.submit')
     const drawerToggleEl = document.querySelector('.drawer-toggle')
     const refreshButton = document.querySelector('.refresh')
-    setTimeout(() => inputEl.focus(), 100)
+    if (!isMobile) setTimeout(() => inputEl.focus(), 100)
     submitEl.addEventListener('click', (e) => { 
       let message = inputEl.value.trim()
       inputEl.value = ''
       if (message !== '') sendMessage(message)
-      inputEl.focus()
+      if (!isMobile) inputEl.focus()
     })
     inputEl.addEventListener('keydown', (e) => { 
       if (e.key === 'Enter') {

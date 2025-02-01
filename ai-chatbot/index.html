@@ -26,20 +26,19 @@
     .message { padding: 10px 14px; border-radius: 8px; line-height: 1.5; }
     .user-message { align-self: flex-end; background-color: #ededed; color: #444; }
     .bot-message { align-self: flex-start; background-color: #fff; color: #444;}
-    .prompts { display: flex; gap: 0.5em; justify-content: center; padding: 0.5em; width: 80%; margin: auto; }
+    .prompts { display: flex; gap: 0.5em; justify-content: center; padding: 0.5em; width: 100%; margin: auto; }
     .chat-textarea { flex: 1; min-height: 40px; max-height: 150px; overflow-y: auto; }
     .advisory { flex: 1; padding: 0.5em .5em 1em .5em; font-size: 0.8em; text-align: center; }
 
-    .input-container { display: flex; align-items: center; padding: 1em 1em .5em 1em; gap: 8px; width: 80%; align-self: center; border: 1px solid #ededed; border-radius: 1em; padding: 2em 1em; background-color: #ededed; }
+    .input-container { display: flex; align-items: center; padding: 1em 1em .5em 1em; gap: 8px; width: 100%; align-self: center; border: 1px solid #ededed; border-radius: 1em; padding: 2em 1em; background-color: #ededed; }
     .input-container svg, footer svg { width: 32px; height: 32px; opacity: 1; cursor: pointer; }
     .input-container svg { opacity: 0.8; }
-    .input-container svg:hover { opacity: 1; }
+    .input-container svg:hover { opacity: 1; }x
     svg.submit { fill: #444; background-color: #fff; border-radius: 50%;}
     svg.refresh { fill: #444; width: 24px; height: 24px; cursor: pointer; }
 
     .drawer-toggle { fill: #444; width: 24px; height: 24px; cursor: pointer; }
-    .response { margin-right: auto; position: relative; }
-    sl-copy-button { position: absolute; right: -22px; bottom: -4px; margin-left: 0.25rem; padding: 0; background-color: inherit; }
+    /* sl-copy-button { position: absolute; right: -22px; bottom: -4px; margin-left: 0.25rem; padding: 0; background-color: inherit; } */
     /* sl-drawer::part(base) { height: calc(100% - 98px); } */
     sl-drawer::part(header) { text-align: center; }
     sl-drawer::part(title) { font-size: 1.5em; font-weight: bold; }
@@ -57,7 +56,8 @@
     @media (min-width: 600px) { /* desktop, laptops, wider devices */
       .chat-area { padding: 2em 1em 1em 1em; } 
       .message { max-width: 90%; box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; }
-      .bot-message { border: 1px solid #e9ecef; } 
+      .bot-message { border: 1px solid #e9ecef; }
+      .input-container, .prompts { width: 80%; }
     }
     /* sl-button::part(base) { background-color: #791917; border-color: #791917; } */
     #settings { display: flex; flex-direction: column; gap: 0.5em; height: 100%;}
@@ -66,6 +66,10 @@
     .prompts svg { width: 16px; height: 16px; }
     .prompts sl-button::part(base) { font-family: "Arial Narrow", "Helvetica Condensed", "Roboto Condensed", sans-serif; }
     header h1 { font-size: 1.5em; color: #444; flex: 1; text-align: center; margin: .5em; }
+
+    .tools { display: flex; gap: 0.5em; opacity: 0; transition: opacity 0.5s; }
+    .tools > * { color: #888 }
+    .response:hover .tools { opacity: 1; }
 
   </style>
 </head>
@@ -139,6 +143,7 @@
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/tab-group/tab-group.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/tab-panel/tab-panel.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/textarea/textarea.js';
+    import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/tooltip/tooltip.js';
 
     const inIframe = window.location !== window.parent.location // flag indicating if the page is in an iframe
     const isMobile = ('ontouchstart' in document.documentElement && /mobi/i.test(navigator.userAgent) )
@@ -260,7 +265,7 @@
       msgCtr = 0
       chatEl.innerHTML = ''
       containerEl.style.height = '40%'
-      inputContainerEl.style.width = '80%'
+      inputContainerEl.style.width = isMobile ? '100%' : '80%'
       promptsEl.style.display = 'flex'
     }
     refreshButton.addEventListener('click', (e) => refresh())
@@ -274,31 +279,36 @@
     
     const scrollToBottom = () => chatEl.scrollTop = chatEl.scrollHeight // scroll chat to bottom
 
+    const addTooltio = (el, text, placement) => {
+      let tooltip = document.createElement('sl-tooltip')
+      tooltip.content = text
+      tooltip.placement = placement || 'bottom'
+      tooltip.style = 'margin-left: 0.25rem;'
+      tooltip.appendChild(el)
+      return tooltip
+    }
+
     Math.random().toString(36).substring(7) // generate a random session ID
     const sendMessage = async (prompt) => {
 
-      let initial = msgCtr === 0
-      let msgId = `msg-${++msgCtr}`
-
       prompt = prompt.trim()
       if (prompt === '') return
-
-      let copyButton
-      if (initial)  {
+      
+      if (msgCtr === 0)  {  // first message
         containerEl.style.height = '100%'
         inputContainerEl.style.width = '100%'
         promptsEl.style.display = 'none'
       }
 
-      let promptWrapperEl = document.createElement('div')
-        promptWrapperEl.setAttribute('class', 'message user-message')
-        let promptEl = document.createElement('div')
-        promptEl.id = msgId
-        // promptEl.setAttribute('class', 'message user-message')
-        promptEl.textContent = prompt
-        promptWrapperEl.appendChild(promptEl)
-        chatEl.appendChild(promptWrapperEl)
-        scrollToBottom()
+      let msgId = `msg-${++msgCtr}`
+      let copyButton
+
+      let promptEl = document.createElement('div')
+      promptEl.setAttribute('class', 'message user-message')
+      promptEl.id = msgId
+      promptEl.textContent = prompt
+      chatEl.appendChild(promptEl)
+      scrollToBottom()
 
       const resp = await fetch(`${apiEndpoint}/chat`, {
         method: 'POST',
@@ -310,36 +320,39 @@
       const decoder = new TextDecoder('utf-8')
 
       let responseWrapperEl = document.createElement('div')
-      responseWrapperEl.setAttribute('class', 'message bot-message')
+      responseWrapperEl.setAttribute('class', 'response')
+
+      let responseEl = document.createElement('div')
+      responseEl.setAttribute('class', 'response')
+      responseEl.id = msgId
+      responseEl.innerHTML = '<sl-spinner></sl-spinner>'
+      responseWrapperEl.appendChild(responseEl)
       
       let responseMarkdownEl = document.createElement('div')
       responseMarkdownEl.id = `md-${msgId}`
       responseMarkdownEl.style.display = 'none'
       responseWrapperEl.appendChild(responseMarkdownEl)
 
-      let responseEl = document.createElement('div')
-      responseEl.innerHTML = '<sl-spinner></sl-spinner>'
-      responseEl.setAttribute('class', 'response')
-      responseEl.id = msgId
-      // responseEl.style.display = 'none'
-      responseWrapperEl.appendChild(responseEl)
-      
+      let toolsEl = document.createElement('div')
+      toolsEl.setAttribute('class', 'tools')
       copyButton = document.createElement('sl-copy-button')
       copyButton.content = prompt
-      copyButton.style.visibility = 'hidden'
       copyButton.setAttribute('from', `md-${msgId}`)
+      copyButton.setAttribute('tooltip-placement', 'bottom')
+      // copyButton = addTooltio(copyButton, 'Copy response')
+      toolsEl.appendChild(copyButton)
+      responseWrapperEl.appendChild(toolsEl)
       
       chatEl.appendChild(responseWrapperEl)
 
       let response = []
-
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
+        if (response.length === 0) 'message bot-message'.split(' ').forEach(cls => responseEl.classList.add(cls))
         response.push(decoder.decode(value))
         responseEl.innerHTML = md2Html(response.join(''))
-        responseEl.appendChild(copyButton)
         scrollToBottom()
       }
       if (msgCtr > 1) copyButton.style.visibility = 'visible'

@@ -70,7 +70,10 @@
     .tools { display: flex; gap: 0.5em; opacity: 0; transition: opacity 0.5s; }
     .tools > * { color: #888 }
     .response:hover .tools { opacity: 1; }
+    .content { background-color: white; max-width: 80dvw; max-height: 50dvh; overflow: auto; padding: 1em; border: 1px solid #e9ecef; border-radius: 8px; }
 
+    .sources svg { width: 20px; height: 20px; fill: rgb(136, 136, 136); margin-top: 6px; cursor: pointer; }
+    pre { white-space: pre-wrap; word-wrap: break-word; }
   </style>
 </head>
 <body>
@@ -135,6 +138,7 @@
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/button/button.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/copy-button/copy-button.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/drawer/drawer.js';
+    import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/dropdown/dropdown.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/option/option.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/select/select.js';
     import 'https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.18.0/cdn/components/spinner/spinner.js';
@@ -178,10 +182,7 @@
       }
     })
     drawerEl.querySelector('sl-button')?.addEventListener('click', () => drawerEl.open = false)
-    drawerToggleEl.addEventListener('click', () => {
-      console.log('toggle')
-      drawerEl.open = !drawerEl.open
-    })
+    drawerToggleEl.addEventListener('click', () => drawerEl.open = !drawerEl.open)
 
     const getDrawerContent = (path) => {
       if (!path.endsWith('.md')) path += '.md'
@@ -201,14 +202,16 @@
     drawerEl.addEventListener('sl-show', () => getDrawerContent('about'))
 
     const settingsValues = { 
-      stream: true, 
+      stream: true,
       models: [
         ['gpt-4o-mini', 'GPT 4o Mini'],
         ['gpt-4o', 'GPT 4o'],
         ['claude-3-sonnet-20240229', 'Claude 3.5 Sonnet']
       ],
       indexes:[
-        ['schh', 'schh']
+        ['schh', 'schh'],
+        ['schh-pc', 'schh-pc'],
+        ['test', 'test']
       ] 
     }
     const defaultSettings = { stream: true, model: 'gpt-4o-mini', index: 'schh' }
@@ -227,7 +230,7 @@
       settingsHtml += `<div class="selector"><span>Model: </span><sl-select id="model" value="${settings.model}" hoist placement="bottom">`
       settingsValues.models.forEach(([value, label]) => settingsHtml += `<sl-option value="${value}">${label}</sl-option>`)
       settingsHtml += `</sl-select></div>`
-      settingsHtml += `<div class="selector"><span>Knowledge base: </span><sl-select id="knowledgeBase" value="${settings.knowledgeBase}" hoist placement="bottom">`
+      settingsHtml += `<div class="selector"><span>Knowledge base: </span><sl-select id="knowledgeBase" value="${settings.index}" hoist placement="bottom">`
       settingsValues.indexes.forEach(([value, label]) => settingsHtml += `<sl-option value="${value}">${label}</sl-option>`)
       settingsHtml += `</sl-select></div>`
       settingsEl.innerHTML = settingsHtml
@@ -242,6 +245,14 @@
     .then(responses => Promise.all(responses.map(r => r.text())))
     .then((responses => responses.map(r => jsyaml.load(r))))
 
+    const makeSvg = (name, color, size) => {
+      let svg = new DOMParser().parseFromString(icons[name], 'text/html').querySelector('svg')
+      svg.setAttribute('fill', color || '#444')
+      svg.setAttribute('height', size || '24px')
+      svg.setAttribute('width', size || '24px')
+      return svg
+    }
+
     const addPrebuiltPrompts = () => {
       let today = new Date().toISOString().slice(0, 10)
       prompts.forEach(p => {
@@ -250,9 +261,8 @@
         promptButton.setAttribute('pill', '')
         promptButton.setAttribute('size', isMobile ? 'small' : 'large')
 
-        let svg = new DOMParser().parseFromString(icons[p.icon], 'text/html').querySelector('svg')
+        let svg = makeSvg(p.icon, icons[p.iconColor], '16px')
         svg.setAttribute('slot', 'prefix')
-        svg.setAttribute('fill', icons[p.iconColor] || '#444')
         promptButton.appendChild(svg);
 
         promptsEl.appendChild(promptButton)
@@ -274,9 +284,7 @@
     getSettings()
     addPrebuiltPrompts(prompts)
 
-    const md2Html = (md) => marked.parse(md).replace(/^\s*<p>/, '').replace(/<\/p>\s*$/, '') // convert markdown to HTML
-    const docReady = (fn) => { if (document.readyState === 'complete' || document.readyState === 'interactive') setTimeout(fn, 1); else document.addEventListener('DOMContentLoaded', fn) }
-    
+    const md2Html = (md) => marked.parse(md).replace(/^\s*<p>/, '').replace(/<\/p>\s*$/, '') // convert markdown to HTML    
     const scrollToBottom = () => chatEl.scrollTop = chatEl.scrollHeight // scroll chat to bottom
 
     const addTooltio = (el, text, placement) => {
@@ -345,24 +353,67 @@
       
       chatEl.appendChild(responseWrapperEl)
 
+      let metadata = null
       let response = []
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
 
-        if (response.length === 0) 'message bot-message'.split(' ').forEach(cls => responseEl.classList.add(cls))
-        response.push(decoder.decode(value))
-        responseEl.innerHTML = md2Html(response.join(''))
+        let vals = decoder.decode(value).split('}{')
+        if (vals.length > 1) {
+          for (let idx = 0; idx < vals.length; idx++) {
+            if (idx === 0) vals[idx] += '}'
+            else if (idx === vals.length - 1) vals[idx] = '{' + vals[idx]
+            else vals[idx] = '{' + vals[idx] + '}'
+          }
+        }
+
+        vals.forEach(val => {
+          let content
+          try {
+            let respObj = JSON.parse(val)
+            if (respObj.sources) metadata = respObj
+            else content = respObj.content !== undefined ? respObj.content : val
+          } catch (e) {
+            console.log(e)
+            content = val
+          }
+          if (response.length === 0) 'message bot-message'.split(' ').forEach(cls => responseEl.classList.add(cls))
+          response.push(content)
+          responseEl.innerHTML = md2Html(response.join(''))
+        })
+
         scrollToBottom()
       }
+
+      if (metadata.sources?.length) {
+        console.log(metadata)
+        let sources = document.createElement('sl-dropdown')
+        sources.className = 'sources'
+
+        let svg = makeSvg('list')
+        svg.setAttribute('slot', 'trigger')
+        sources.appendChild(svg)
+
+        let content = document.createElement('div')
+        content.setAttribute('class', 'content')
+        let sourceList = document.createElement('ul')
+        content.appendChild(sourceList);
+        (metadata.sources || []).forEach(source => {
+          let sourceListItem = document.createElement('li')
+          sourceListItem.innerHTML = `<a href="${source.source}" target="_blank">${source.id.split('/').pop()}</a>`
+          sourceList.appendChild(sourceListItem)
+        })
+        sources.appendChild(content)
+        
+        sources = addTooltio(sources, 'Show sources')
+
+        toolsEl.appendChild(sources)
+      }
+
       if (msgCtr > 1) copyButton.style.visibility = 'visible'
       responseMarkdownEl.textContent = response.join('').split('\n').map(line => line.replace(/^#/g, '###')).join('\n')
     }
-
-    docReady( async function() { 
-      // main.style.visibility = 'visible'
-      // sendMessage('Hello')
-    })
 
   </script>
 </body>

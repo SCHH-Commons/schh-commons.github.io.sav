@@ -140,11 +140,12 @@ async def stream_response(messages, config):
           # retrieved_metadata = [json.loads(re.sub(r'^Source:\s*', '', rec.split('\n')[0])) for rec in msg.content.split('\n||\n')]
           for rec in retrieved_metadata:
             source = dict([(k,v) for k,v in rec.items() if k in ('id', 'title', 'source')])
+            if 'id' in source: source['id'] = source['id'].rsplit(':', 1)[0]
             if 'id' in source and not next((item for item in sources if item['id'] == source['id']), None):
               sources.append(source)
         except Exception as e:
           print(e)
-  yield json.dumps({'sources': sources})
+  yield json.dumps({'metadata': {'sources': sources}})
  
  ### Setup FastAPI server and define endpoints ###
  

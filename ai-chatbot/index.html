@@ -372,7 +372,7 @@
           let content
           try {
             let respObj = JSON.parse(val)
-            if (respObj.sources) metadata = respObj
+            if (respObj.metadata) metadata = respObj.metadata
             else content = respObj.content !== undefined ? respObj.content : val
           } catch (e) {
             console.log(e)
@@ -387,7 +387,6 @@
       }
 
       if (metadata.sources?.length) {
-        console.log(metadata)
         let sources = document.createElement('sl-dropdown')
         sources.className = 'sources'
 
@@ -396,6 +395,9 @@
         sources.appendChild(svg)
 
         let content = document.createElement('div')
+        let heading = document.createElement('h3')
+        heading.textContent = 'Sources'
+        content.appendChild(heading)
         content.setAttribute('class', 'content')
         let sourceList = document.createElement('ul')
         content.appendChild(sourceList);

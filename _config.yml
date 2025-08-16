@@ -1,0 +1,38 @@
+title: SCHH Commons
+
+description: Community-supported resources for Sun City Hilton Head (SCHH)
+
+author:
+  name: Ron Snyder
+  email: ron@snyderjr.com
+
+github:
+  owner_name: schh-commons
+  repository_name: schh-commons.github.io
+  source:
+    branch: main
+
+nav_pages:
+  - index.md
+  - about.md
+  - podcasts.md
+  - contact.md
+
+collections:
+  articles:
+    output: true
+    permalink: /:collection/:path/
+  podcasts:
+    output: true
+    permalink: /:collection/:path/
+
+show_excerpts: true
+show_rss_feed: true
+max-width: 1000px
+
+footer:
+  show_github_link: false
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag

@@ -1,12 +1,13 @@
 ---
+title: AI Chatbots
 permalink: /ai-chatbots
 layout: default
 ---
 
 # AI Chatbots
 
-![alt text](test.png)
 
-`image src=test.png`
 
-`image src=Monument_Valley.jpg`
+- [ChatGPT](https://chatgpt.com/g/g-6760d0e55ff481918057b4697385a94e-sun-city-hilton-head)
+- [Notebook LM](https://notebooklm.google.com/notebook/0f446377-e804-4d34-baad-9c1b5676c437)
+- [Custom](https://www.schh-commons.org/ai-chatbot)

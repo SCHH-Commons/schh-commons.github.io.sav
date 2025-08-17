@@ -28,4 +28,10 @@ layout: base
     img.src = `https://raw.githubusercontent.com/${pageData.owner}/${pageData.repo}/main/${pageData.path.replace(/\/index.md/,'')}/${name}`
     console.log(img.src)
   });
+  document.querySelectorAll('a[href^="http"]').forEach(link => {
+    if (link.hostname !== window.location.hostname) {
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener');
+    }
+  });
 </script>

@@ -12,4 +12,4 @@ published: true
 
 # SunSations March 2025
 
-`audio #ss202503 https://schh-commons.org/podcasts/SunSations_March_2025.mp3 medium`
+`audio #ss202503 src=SunSations_March_2025.mp3 medium`

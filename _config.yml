@@ -14,8 +14,9 @@ github:
 
 nav_pages:
   - _pages/index.md
-  - _pages/about.md
+  - _articles/index.md
   - _podcasts/index.md
+  - _pages/about.md
   - _pages/contact.md
 
 collections:

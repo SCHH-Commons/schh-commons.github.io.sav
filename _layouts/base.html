@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {%- seo -%}
-    <link rel="icon" type="image/x-icon" href="{{ '/favicon.ico' | relative_url }}">
+    <link rel="icon" type="image/x-icon" href="{{ '/assets/images/favicon.ico' | relative_url }}">
     {%- feed_meta -%} 
 
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
@@ -22,7 +22,7 @@
     <header class="site-header">
       <div class="wrapper">
 
-        <a class="site-title" rel="author" href="{{ '/' | relative_url }}"><img src="{{ '/favicon.ico' | relative_url }}" alt="Site logo"> {{ site.title | escape }}</a>
+        <a class="site-title" rel="author" href="{{ '/' | relative_url }}"><img src="{{ '/assets/images/favicon.ico' | relative_url }}" alt="Site logo"> {{ site.title | escape }}</a>
 
         {% capture nav_items_string %}
           {% for nav_path in site.nav_pages %}

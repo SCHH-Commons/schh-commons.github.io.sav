@@ -13,16 +13,19 @@ github:
     branch: main
 
 nav_pages:
-  - index.md
-  - about.md
-  - podcasts.md
-  - contact.md
+  - _pages/index.md
+  - _pages/about.md
+  - _podcasts/index.md
+  - _pages/contact.md
 
 collections:
   articles:
     output: true
     permalink: /:collection/:path/
   podcasts:
+    output: true
+    permalink: /:collection/:path/
+  pages:
     output: true
     permalink: /:collection/:path/
 

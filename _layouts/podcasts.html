@@ -9,7 +9,7 @@ layout: base
   }
 </style>
 
-<article class="post">
+<article class="post-content">
 
   {{ content }}
 
@@ -34,8 +34,8 @@ layout: base
     <hr style="margin:0;"/><br/>
   {%- endif -%}
 
-  {% assign content = site.podcasts %}
-  {%- if content.size > 0 -%}
+  {% assign posts = site.podcasts | where_exp:"item", "item.relative_path != '_podcasts/index.md'" %}
+  {%- if posts.size > 0 -%}
 
     {%- if page.list_title -%}
       <h2 class="post-list-heading">{{ page.list_title }}</h2>
@@ -43,7 +43,7 @@ layout: base
 
     <ul class="post-list">
       {%- assign date_format = site.minima.date_format | default: "%b %-d, %Y" -%}
-      {%- for post in site.podcasts -%}
+      {%- for post in posts -%}
       <li>
         {%- if post.thumbnail -%}
           <div class="image-container" data-path="{{post.path}}" style="width: 250px; height: 160px; flex-shrink: 0; overflow: hidden;">

@@ -1,3 +1,15 @@
+html {
+  font-size: 18px; /* default is usually 16px */
+}
+
+body {
+  font-size: 1rem; /* keep body text tied to the base size */
+}
+
+body {
+  opacity: 0;
+}
+
 .site-title {
   display: flex;
   align-items: center;
@@ -11,3 +23,10 @@
 header.post-header {
   display: none;;
 }
+
+:is(.post-title, .post-content) h1 { font-size: 2rem; }
+:is(.post-title, .post-content) h2 { font-size: 1.75rem; }
+:is(.post-title, .post-content) h3 { font-size: 1.5rem; }
+:is(.post-title, .post-content) h4 { font-size: 1.25rem; }
+:is(.post-title, .post-content) h5 { font-size: 1.125rem; }
+:is(.post-title, .post-content) h6 { font-size: 1.125rem; }

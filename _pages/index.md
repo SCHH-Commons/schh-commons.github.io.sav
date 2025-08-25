@@ -4,18 +4,27 @@ title: Home
 permalink: /
 ---
 
-# Welcome 
 
-## Heading 2
+# Welcome
 
-### Heading 3
 
-#### Heading 4
 
-##### Heading 5
+##
+{: .grid}
 
-##### Heading 6
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+### ![AI Icon](https://upload.wikimedia.org/wikipedia/commons/2/23/Noun_project_194.svg) AI Chatbots
+{: click="ai-chatbots"}
 
-[AI Chatbots](/ai-chatbots)
+Use an AI Chatbot to query the SCHH Knowledge Base.  
+
+
+### ![Calendar Icon](https://upload.wikimedia.org/wikipedia/commons/8/82/Calendar_Icon_v1.svg) Calendar
+{: click="calendar"}
+
+Find upcoming events
+
+### ![Map Icon](https://upload.wikimedia.org/wikipedia/commons/8/86/Interactive_Map_icon.svg) Maps
+{: click="maps"}
+
+View interactive maps - Coming soon...

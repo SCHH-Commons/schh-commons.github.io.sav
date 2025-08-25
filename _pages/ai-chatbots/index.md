@@ -21,7 +21,7 @@ Most capable chatbot
 - Requires login with a free Google account
 - **Most detailed responses**
 
-<sl-button variant="primary" href="nblm" target="_blank">Start Notebook LM Chat</sl-button>
+<sl-button variant="primary" href="nblm" target="_blank">Start Chat</sl-button>
 
 
 ### ![OpenAI logo](openai.svg) ChatGPT
@@ -31,7 +31,7 @@ Good chatbot
 - Requires login with a free OpenAI account
 - **Supports voice mode**
 
-<sl-button variant="primary" href="chatgpt" target="_blank">Start ChatGPT Chat</sl-button>
+<sl-button variant="primary" href="chatgpt" target="_blank">Start Chat</sl-button>
 
 
 ### ![SCHH Commons logo](/assets/images/favicon.ico) SCHH Commons
@@ -42,4 +42,4 @@ Simple chatbot
 - Under development
 - Uses ChatGPT Custom GPT
 
-<sl-button variant="primary" href="https://www.schh-commons.org/ai-chatbot" target="_blank">Start SCHH Commons Chat</sl-button>
+<sl-button variant="primary" href="https://www.schh-commons.org/ai-chatbot" target="_blank">Start Chat</sl-button>

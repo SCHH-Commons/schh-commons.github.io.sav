@@ -30,3 +30,12 @@ header.post-header {
 :is(.post-title, .post-content) h4 { font-size: 1.25rem; }
 :is(.post-title, .post-content) h5 { font-size: 1.125rem; }
 :is(.post-title, .post-content) h6 { font-size: 1.125rem; }
+
+/* Mobile devices */
+@media screen and  (max-width: 600px) {
+  .wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 0.5em;
+  }
+}

@@ -8,14 +8,14 @@ layout: default
 
 You can chat with the SCHH Knowledge Base using three different clients. All three use the same information but work through different AI tools:.
 
-The SCHH Knowledge Base combines official community documents with information shared by residents, making it easier to find and understand what matters in Sun City. A complete list of the documents included can be viewed on the [Knowledge Base Documents](/knowledge-base) page.
+The SCHH Knowledge Base combines official community documents with information shared by residents, making it easier to find and understand what matters in Sun City.
 
 ##
 {: .grid}
 
 
 ### ![Notebook LM logo](notebooklm.svg) Notebook LM
-{: click="nblm" target="_blank"}
+{: click="nblm"}
 
 Most capable chatbot
 - Requires login with a free Google account
@@ -25,7 +25,7 @@ Most capable chatbot
 
 
 ### ![OpenAI logo](openai.svg) ChatGPT
-{: click="chatgpt" target="_blank"}
+{: click="chatgpt"}
 
 Good chatbot
 - Requires login with a free OpenAI account

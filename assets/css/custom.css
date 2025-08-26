@@ -39,3 +39,52 @@ header.post-header {
     padding: 0 0.5em;
   }
 }
+
+/* larger screens */
+@media (min-width: 600px) {
+
+  .iframe-container iframe {
+    flex: 1 1 100%; /* Each item takes full width on smaller screens */
+  }
+
+  sl-card {
+    max-width: 300px;
+  }
+
+  .fill {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .float {
+    float: right;
+    margin-left: 1rem;
+    display: flow-root;
+  }
+
+  .center {
+      display: block;
+      margin: 0 auto;
+  }
+
+  .shadow,
+  .box-shadow {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+  }
+
+  .large {
+    width: 75% !important;
+    flex-grow: 0.75 !important;
+  }
+
+  .medium {
+    width: 50% !important;
+    flex-grow: 0.5 !important;
+  }
+
+  .small {
+    width: 33% !important;
+    flex-grow: 0.33 !important;
+  }
+
+}

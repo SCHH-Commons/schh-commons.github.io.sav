@@ -11,8 +11,10 @@ layout: base
 
 <article class="post-content">
 
-  {{ content }}
-
+  <div class="post-content">
+    {{ content }}
+  </div>
+  
   {% assign all_tags = "" | split: "" %}
   {% for article in site.articles %}
     {% if article.tags %}
@@ -47,8 +49,8 @@ layout: base
 
       <li>
         {%- if post.thumbnail -%}
-          <div class="image-container" data-path="{{post.path}}" style="width: 250px; height: 160px; flex-shrink: 0; overflow: hidden;">
-            <img data-src="{{ post.thumbnail }}" alt="{{ post.title }}" class="post-image shadow" style="display: block; width: 100%; height: 100%; object-fit: cover;"/>
+          <div class="image-container" data-path="{{post.path}}">
+            <img data-src="{{ post.thumbnail }}" alt="{{ post.title }}" class="post-image shadow"/>
           </div>
         {%- endif -%}
         <div>

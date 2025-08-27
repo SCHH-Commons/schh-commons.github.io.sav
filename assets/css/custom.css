@@ -31,6 +31,68 @@ header.post-header {
 :is(.post-title, .post-content) h5 { font-size: 1.125rem; }
 :is(.post-title, .post-content) h6 { font-size: 1.125rem; }
 
+/***** Post List Styling /*****/
+.post-meta {
+  font-size: 1rem;
+  color: #828282;
+  margin-bottom: 0.25rem
+} 
+h1 {
+  margin-bottom: 0.5rem
+}
+
+/* ————— Base reset ————— */
+.post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ————— Desktop layout ————— */
+.post-list li {
+  display: flex;
+  flex-direction: row;       /* image left, text right */
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.post-list .image-container {
+  width: 250px;              /* modest thumbnail width */
+  height: 160px;             /* fixed thumbnail height */
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-right: 1rem;
+}
+
+.post-list .post-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* fill box & crop as needed */
+  object-position: center;
+}
+
+.post-list > li > div:last-of-type > h1,
+.post-list > li > div:last-of-type > h2,
+.post-list > li > div:last-of-type > h3,
+.post-list > li > div:last-of-type > h4 {
+  margin-top: 0;             /* remove top margin if first element is a heading */
+}
+
+/* ————— Mobile override (≤600px) ————— */
+@media (max-width: 600px) {
+  .post-list li {
+    flex-direction: column;  /* stack image above text */
+  }
+  .post-list .image-container {
+    width: 100%;             /* full width of list item */
+    height: 200px;           /* keep same height or switch to auto if you like */
+    margin-right: 0;
+    margin-bottom: 1rem;
+  }
+}
+/***** End Post List Styling /*****/
+
 /* Mobile devices */
 @media screen and  (max-width: 600px) {
   .wrapper {

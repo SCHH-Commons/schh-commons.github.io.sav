@@ -16,8 +16,10 @@ layout: base
     <h1 class="tag-title">Tag: {{ page.tag }}</h1>
   {% endif %}
 
-  {{ content }}
-
+  <div class="post-content">
+    {{ content }}
+  </div>
+  
   <hr/>
 
   {% assign target_tag = page.tag %}

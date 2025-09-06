@@ -46,7 +46,7 @@ Welcome to SCHH Commons, a neighbor-supported project designed to bring together
 
 
 ### ![AI Icon](https://upload.wikimedia.org/wikipedia/commons/2/23/Noun_project_194.svg) Knowledge Base
-{: click="knowledge-base" style="background: var(--tile-ai);"}
+{: click="kb" style="background: var(--tile-ai);"}
 
 Ask questions and explore SCHH resources with AI assistance.  
 

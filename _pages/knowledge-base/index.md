@@ -1,6 +1,6 @@
 ---
 title: SCHH Knowledge Base
-permalink: /knowledge-base
+permalink: /kb
 layout: post
 ---
 

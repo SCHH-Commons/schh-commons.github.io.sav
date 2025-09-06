@@ -75,4 +75,12 @@ layout: base
     if (['favicon.ico', 'favicon.png', 'favicon.svg'].includes(name)) return
     img.src = `https://raw.githubusercontent.com/${pageData.owner}/${pageData.repo}/main/${pageData.path.replace(/\/index.md/,'')}/${name}`
   });
+  document.querySelectorAll('svg').forEach((svg) => {
+    let src = new URL(svg.href)
+    if (location.origin !== src.origin) return
+    let name = src.pathname.split('/').pop()
+    if (['favicon.svg'].includes(name)) return
+    svg.href = `https://raw.githubusercontent.com/${pageData.owner}/${pageData.repo}/main/${pageData.path.replace(/\/index.md/,'')}/${name}`
+  });
+
 </script>

@@ -21,5 +21,4 @@ permalink: /calendar
 
 # SCHH Events Calendar
 
-<iframe src="https://calendar.google.com/calendar/embed?src=cc57b2287c935248700ac4d71635fb15dbd8dc221a2e2e255d78dba74123a123@group.calendar.google.com
-&ctz=America%2FNew_York&mode=agenda" style="border: 0" frameborder="0" scrolling="no"></iframe>
+<iframe src="https://calendar.google.com/calendar/embed?src=cbhph5hgjv492pn9usop0uuacg533kpf@import.calendar.google.com&ctz=America%2FNew_York&mode=agenda" style="border: 0" frameborder="0" scrolling="no"></iframe>

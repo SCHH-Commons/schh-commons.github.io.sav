@@ -15,12 +15,16 @@ github:
 nav_pages:
   - _pages/index.md
   - _articles/index.md
+  - _maps/index.md
   - _podcasts/index.md
   - _pages/about.md
   - _pages/contact.md
 
 collections:
   articles:
+    output: true
+    permalink: /:collection/:path/
+  maps:
     output: true
     permalink: /:collection/:path/
   podcasts:

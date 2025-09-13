@@ -5,56 +5,23 @@ permalink: /support
 ---
 
 <style>
-    .container {
-        display: flex;
-        justify-content: center;  /* centers links horizontally */
-        align-items: center;      /* centers links vertically (if container has height) */
-        gap: 1rem;                /* spacing between links */
-        height: 100px;            /* example height for vertical centering */
-        border: 2px solid #ccc; 
-        border-radius: 12px; 
-        padding: 1em; 
-        margin: 2em 0; 
-        background-color: #f9f9f9; 
-    }
-
-    .container a {
+    .button {
+        position: relative;
+        border-radius: 1000px;
+        cursor: pointer;
+        display: inline-block;
+        min-width: 6rem;
+        text-align: center;
         text-decoration: none;
-        padding: 0.5rem 1rem;
-        color: white;
-    }
-    .ko-fi {
-        display:inline-block; 
-        margin:0.5em; 
-        padding:0.75em 1.25em; 
-        background:#29abe0; 
-        color:#fff; 
-        font-weight:bold; 
-        border-radius:8px; 
-        text-decoration:none; 
-        font-size:1.1em;
-    }
-    .paypal {
-        display:inline-block; 
-        margin:0.5em; 
-        padding:0.75em 1.25em; 
-        background:#003087; 
-        color:#fff; 
-        font-weight:bold; 
-        border-radius:8px; 
-        text-decoration:none; 
-        font-size:1.1em;
-    }
-    .contact {
-        display:inline-block; 
-        margin:0.5em; 
-        padding:0.75em 1.25em; 
-        background:#666; 
-        color:#fff; 
-        font-weight:bold; 
-        border-radius:8px; 
-        text-decoration:none; 
-        font-size:1.1em;"
+        transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+        border: 0.125rem solid rgb(255, 209, 64);
+        font-family: PayPalOpen-Bold, "Helvetica Neue", Arial, sans-serif;
+        font-size: 1.125rem;
+        line-height: 1.5rem;
+        font-weight: 400;
+        padding: 0.625rem 1.875rem;
+        background: rgb(255, 209, 64);
+        color: rgb(0, 48, 135);
     }
 
 </style>
@@ -62,22 +29,7 @@ permalink: /support
 
 # Support SCHH Commons
 
-SCHH Commons is a community-sponsored project.  Your contribution helps cover hosting and technology costs, and supports ongoing improvements.
+**SCHH Commons is a community-sponsored project, offered free for all residents to use.**
+Contributions help cover hosting, AI tools, and technology subscriptions, as well as ongoing site maintenance and improvements. Your support keeps SCHH Commons reliable, up to date, and growing as a resource for our community.
 
----
-
-## Safe and Easy Ways to Contribute
-
-###
-{: .container}
-
-[☕ Support via Ko-fi](https://ko-fi.com){: .ko-fi target=_blank}
-
-[![PayPal Logo](logo_paypal_106x27.png)Donate with PayPal](https://www.paypal.com/donate/?hosted_button_id=NR3BJHTW66JG6){: .paypal target=_blank}
-
-[✉️ Prefer a Check? Contact Us](#contact){: .contact target=_blank}
-
-##
-
-All transactions are processed securely by Ko-fi or PayPal.  SCHH Commons never sees or stores your financial information.
-
+<a href="https://www.paypal.com/donate/?hosted_button_id=NR3BJHTW66JG6"><button tabindex="0" class="button" data-ppui-info="buttons_7.9.12" id="payWithPP"><img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-mark-color.svg" alt="Contribute using PayPal" style="height: 24px; width: 24px; margin-right: 8px;">Contribute using PayPal</button></a>
